@@ -42,33 +42,3 @@ def resize_to_aspect_ratio(img, aspect_ratio):
     img = cv2.resize(img, (int(target[1]), int(target[0])))
     
     return img
-
-
-# """
-# Pad image to a given aspect ratio
-# @param img          : 
-# @param aspect_ratio : target aspect_ratio
-# @return             : image with specified aspect ratio
-# """
-# def pad_to_aspect_ratio(img, aspect_ratio):
-
-#     h, w = img.shape
-
-#     # update aspect_ratio to w / h
-#     if w > h:
-#         aspect_ratio = 1 / aspect_ratio
-
-#     # two possible shape: (h, aspect_ratio * h) and (w / aspect_ratio, w)
-    
-#     diff_h, diff_w = 0, 0
-    
-#     if aspect_ratio * h > w:
-#         diff_w += int((aspect_ratio * h - w) // 2)
-        
-#     elif w / aspect_ratio > h:
-#         diff_h += int((w / aspect_ratio - h) // 2)
-
-#     pad_width = [(diff_h, diff_h), (diff_w, diff_w)]
-
-#     img = np.pad(img, pad_width, mode='constant', constant_values=0)
-#     return img
