@@ -27,23 +27,20 @@ Resize image to a given aspect ratio
 @return             : image with specified aspect ratio
 """
 def resize_to_aspect_ratio(img, aspect_ratio):
-
+    
     h, w = img.shape
 
     # update aspect_ratio to w / h
     if w > h:
         aspect_ratio = 1 / aspect_ratio
 
-    # two possible shape: (h, aspect_ratio * h) and (w / aspect_ratio, w)
+    # two possible shape based on h or w, pick the largest
+    shape1 = (h, aspect_ratio * h)
+    shape2 = (w / aspect_ratio, w)
+    target = shape1 if shape1[0] > shape2[0] else shape2
     
-    diff_h, diff_w = 0, 0
+    img = cv2.resize(img, (int(target[1]), int(target[0])))
     
-    if aspect_ratio * h > w:
-        img = cv2.resize(img, (h, int(aspect_ratio * h // 2 * 2)))
-        
-    elif w / aspect_ratio > h:
-        img = cv2.resize(img, (int((w / aspect_ratio) // 2 * 2), w))
-
     return img
 
 
