@@ -1,6 +1,10 @@
 """
-This file contains ARAN utils
+Implementation of aspect ratio normalization (ARAN) as described in the 
+following paper
+- Liu, C. & Koga, M. & Sako, H, & Fujisawa, H. (2000). Aspect Ratio Adaptive 
+  Normalization for Handwritten Character Recognition.
 """
+
 import math
 import numpy as np
 import cv2

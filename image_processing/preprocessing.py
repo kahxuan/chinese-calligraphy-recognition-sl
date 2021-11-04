@@ -1,5 +1,5 @@
 """
-This file contains general image utils for preprocessing
+General utils for image preprocessing
 """
 
 import numpy as np
