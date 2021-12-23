@@ -8,11 +8,12 @@
 
 
 int N, M;
-double p = 0.5;
+double p;
+int** img;
 
-png_bytep *img;
 double** memo_c;
 double** memo_d;
+
 double** memo_K;
 double** memo_tilde_K;
 double** memo_ekmi_t;
@@ -226,6 +227,8 @@ double ekmi_t(int n, int m) {
 
 double ekmi_rst(int n, int m) {
 
+    // memo_ekmi_rst[n][m] = 1.0;
+
     double term1, term2, term3, term4, term5, term6, term7, term8, term9, term10;
     double acc1, acc2, acc3, acc4, acc5, acc6;
 
@@ -275,66 +278,84 @@ double ekmi_rst(int n, int m) {
 }
 
 
-double** get_ekmi(int order, char* fname) {
-        
-    // read image
-    ImgData img_data;
-    img_data = read_png_file(fname);
-    img = get_channel_one(img_data.img, img_data.height, img_data.width);
-    N = img_data.height;
-    // M = img_data.width;
-    M = N;
+double** get_ekmi(int order, int** _img, int _N, double _p) {
+
+    int i, j;
+    N = _N;
+    M = _N;
+    p = _p;
+    img = (int**)init_mat2d(N);
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < M; j++) {
+            img[i][j] = _img[i][j];
+        }
+    }
 
     // initialize memo arrays
-    int size = fmin(N, M) * 2 + 1;
-    memo_c = init_mat2d(size);
-    memo_d = init_mat2d(size);
-    memo_K = init_mat2d(size);
-    memo_tilde_K = init_mat2d(size);
-    memo_ekmi_t = init_mat2d(size);
+    int memo_size = N + 1;
+    memo_c = init_mat2d(memo_size);
+    memo_d = init_mat2d(memo_size);
+    memo_K = init_mat2d(memo_size);
+    memo_tilde_K = init_mat2d(memo_size);
+    memo_ekmi_t = init_mat2d(memo_size);
     memo_ekmi_rst = init_mat2d(order);
 
     // initialize stirling cache
-    if (!stirling_cache_create1(&sc1, size)) {
+    if (!stirling_cache_create1(&sc1, memo_size)) {
         fprintf(stderr, "Out of memory\n");
         return memo_ekmi_rst;
     }
-    if (!stirling_cache_create2(&sc2, size)) {
+    if (!stirling_cache_create2(&sc2, memo_size)) {
         fprintf(stderr, "Out of memory\n");
         return memo_ekmi_rst;
     }
 
     // extract moment
-    for (int i=0; i<order; i++) {
-        for (int j=0; j<order; j++) {
+    for (i = 0; i < order; i++) {
+        for (j = 0; j < order; j++) {
             ekmi_rst(i, j);
         }
     }
     
     // clean up
-    free(img);
-    free_mat2d(memo_c, size);
-    free_mat2d(memo_d, size);
-    free_mat2d(memo_K, size);
-    free_mat2d(memo_tilde_K, size);
-    free_mat2d(memo_ekmi_t, size);
+    free_mat2d(memo_c, memo_size);
+    free_mat2d(memo_d, memo_size);
+
+    free_mat2d((double**)img, N);
+    free_mat2d(memo_K, memo_size);
+    free_mat2d(memo_tilde_K, memo_size);
+    free_mat2d(memo_ekmi_t, memo_size);
+
     stirling_cache_destroy1(&sc1);
     stirling_cache_destroy2(&sc2);
 
-    // free_mat2d(memo_ekmi_rst, order);
     return memo_ekmi_rst;
 }
 
 
+// void init_memo(int _N, double _p) {
+
+// }
+
 
 int main() {
 
+    // read image
+    ImgData img_data = read_png_file("/Users/kx/desktop/1.png");
+    png_bytep* _img = get_channel_one(img_data.img, img_data.height, img_data.width);
+    N = img_data.height;
+    int** img = (int**)init_mat2d(N);
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            img[i][j] = _img[i][j];
+        }
+    }
+
     time_t start, stop;
     int order = 5;
-    char *fname  =  "/Users/kx/desktop/1.png";
-
+    
     start = time(NULL);
-    memo_ekmi_rst = get_ekmi(order, fname);
+    memo_ekmi_rst = get_ekmi(order, img, N, 0.5);
     stop = time(NULL);
     
     printf("\n== ekmi_rst  ==\n");
@@ -346,6 +367,8 @@ int main() {
     }
 
     free_mat2d(memo_ekmi_rst, order);
+    free_mat2d((double**)img, N);
+    free(_img);
     printf("\nTime taken: %lds\n", stop-start);
 
 	return 0;
