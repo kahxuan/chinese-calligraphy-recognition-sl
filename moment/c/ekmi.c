@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "utils/png_utils.h"
+#include "ekmi.h"
 #include "utils/stirling_number1.h"
 #include "utils/stirling_number2.h"
-#include <time.h> 
 
 
-int N, M;
+int N, M, order;
 double p;
 int** img;
 
@@ -21,9 +20,6 @@ double** memo_ekmi_rst;
 stirling_cache1 sc1 = { 0 };
 stirling_cache2 sc2 = { 0 };
 
-
-// int factorial(int x);
-// int central_moment(int* img, int p, int q);
 
 double factorial(int x) {  
 	double retval = 1;
@@ -115,7 +111,7 @@ double K(int n, int x) {
             memo_K[n][x] = 
                 (N2 * p - 2 * m * p + m - x) * K(m, x) - 
                     m * (1 - p) * K(m - 1, x);
-            memo_K[n][x] = memo_K[n][x] / (p * (N2 - m));
+            memo_K[n][x] = memo_K[n][x] / (p * (N2 - m)); // 0 if order > N / 2
         }
     }
     return memo_K[n][x];
@@ -278,11 +274,13 @@ double ekmi_rst(int n, int m) {
 }
 
 
-double** get_ekmi(int order, int** _img, int _N, double _p) {
+double** get_ekmi(int _order, int** _img, int _N, double _p) {
 
     int i, j;
-    N = _N;
-    M = _N;
+
+    // set global variables
+    order = _order;
+    N = M = _N;
     p = _p;
     img = (int**)init_mat2d(N);
     for (i = 0; i < N; i++) {
@@ -292,7 +290,7 @@ double** get_ekmi(int order, int** _img, int _N, double _p) {
     }
 
     // initialize memo arrays
-    int memo_size = N + 1;
+    int memo_size = N * 2 + 1;
     memo_c = init_mat2d(memo_size);
     memo_d = init_mat2d(memo_size);
     memo_K = init_mat2d(memo_size);
@@ -333,55 +331,7 @@ double** get_ekmi(int order, int** _img, int _N, double _p) {
 }
 
 
-// void init_memo(int _N, double _p) {
-
-// }
-
-
-int main() {
-
-    // read image
-    ImgData img_data = read_png_file("/Users/kx/desktop/1.png");
-    png_bytep* _img = get_channel_one(img_data.img, img_data.height, img_data.width);
-    N = img_data.height;
-    int** img = (int**)init_mat2d(N);
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            img[i][j] = _img[i][j];
-        }
-    }
-
-    time_t start, stop;
-    int order = 5;
-    
-    start = time(NULL);
-    memo_ekmi_rst = get_ekmi(order, img, N, 0.5);
-    stop = time(NULL);
-    
-    printf("\n== ekmi_rst  ==\n");
-    for (int i=0; i<order; i++) {
-        for (int j=0; j<order; j++) {
-            printf("%*.4f ", 9, memo_ekmi_rst[i][j]);
-        }
-        printf("\n");
-    }
-
+void free_ekmi_rst() {
     free_mat2d(memo_ekmi_rst, order);
-    free_mat2d((double**)img, N);
-    free(_img);
-    printf("\nTime taken: %lds\n", stop-start);
-
-	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
 
