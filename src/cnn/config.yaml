@@ -1,0 +1,15 @@
+dataset:
+    train: data/cccr/train
+    validation: data/cccr/validation
+    test: data/cccr/test
+    num_class: 100
+model:
+    image_size: [224, 224]
+    batch_size: 16
+    augmentation:
+        rotation: 0.05
+    hidden_dense: 512
+train:
+    optimizer:
+        name: adam
+        lr: 0.0001
