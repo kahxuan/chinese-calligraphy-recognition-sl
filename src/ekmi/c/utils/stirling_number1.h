@@ -37,29 +37,5 @@ void stirling_cache_destroy1(stirling_cache1* sc) {
     free(sc->values);
     sc->values = NULL;
 }
- 
-void print_stirling_numbers1(stirling_cache1* sc, int max) {
-    printf("Unsigned Stirling numbers of the first kind:\nn/k");
-    for (int k = 0; k <= max; ++k)
-        printf(k == 0 ? "%2d" : "%10d", k);
-    printf("\n");
-    for (int n = 0; n <= max; ++n) {
-        printf("%2d ", n);
-        for (int k = 0; k <= n; ++k)
-            printf(k == 0 ? "%2d" : "%10d", stirling_number1(sc, n, k));
-        printf("\n");
-    }
-}
 
 
-// int main() {
-//     stirling_cache1 sc = { 0 };
-//     const int max = 12;
-//     if (!stirling_cache_create(&sc, max)) {
-//         fprintf(stderr, "Out of memory\n");
-//         return 1;
-//     }
-//     print_stirling_numbers(&sc, max);
-//     stirling_cache_destroy(&sc);
-//     return 0;
-// }

@@ -3,7 +3,7 @@
 
 double factorial(int x);
 int binom(int a, int b);
-double geometric_moment(int x, int y);
+// double geometric_moment(int x, int y);
 double central_moment(int x, int y);
 double** init_mat2d(int size);
 void free_mat2d(double** mat2d, int size);
