@@ -138,3 +138,21 @@ def pad_to_square(img, n):
         cv2.BORDER_CONSTANT, value=0
     )
     return img_square
+
+
+def resize_by_scale(img, max_hw):
+    h, w = img.shape
+    new_h, new_w = max_hw, max_hw
+    if h > w:
+        new_w = int(w * new_h / h)
+    else:
+        new_h = int(h * new_w / w)
+    img_resized = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_NEAREST)
+    return img_resized
+
+
+def norm_char_size(img, n, margin):
+    img = remove_padding(img)
+    img = resize_by_scale(img, n - margin * 2)
+    img = pad_to_square(img, n)
+    return img
