@@ -160,55 +160,17 @@ double bar_K(int n, int x) {
 
 
 double tilde_K(int n, int m) {
-    // if (memo_tilde_K[n][m] == 0) {
-    //     int x, y;
-    //     memo_tilde_K[n][m] = 0;
-    //     for (x = 0; x < N; x++) {
-    //         for (y = 0; y < M; y++) {
-    //             // memo_tilde_K[n][m] += img[x][y] * bar_K(n, x) * bar_K(m, y);
-    //             // memo_tilde_K[n][m] += img[x][y] * 
-    //             //     sqrt(w(x) / rho(n)) * K(n, x) * 
-    //             //     sqrt(w(y) / rho(m)) * K(m, y);
-    //             memo_tilde_K[n][m] += img[x][y] * K(n, x) * K(m, y);
-    //         }
-    //     }
-    // }
-    // return memo_tilde_K[n][m];
-
-    double res = 0;
-    int x, y;
-    for (x = 0; x < N; x++) {
-        for (y = 0; y < M; y++) {
-            res += img[x][y] * K(n, x) * K(m, y);
-        }
-    }
-    return res;
-}
-
-
-double tilde_K_t(int n, int m, double x0, double y0) {
     if (memo_tilde_K[n][m] == 0) {
         int x, y;
         memo_tilde_K[n][m] = 0;
         for (x = 0; x < N; x++) {
             for (y = 0; y < M; y++) {
-                memo_tilde_K[n][m] += img[x][y] * 
-                    // sqrt(w(x - x0) / rho(n)) * K(n, x) * 
-                    // sqrt(w(y - y0) / rho(m)) * K(m, y);
-                    sqrt(w(x - x0)) * K(n, x) * 
-                    sqrt(w(y - y0)) * K(m, y);
-                    // sqrt(1 / rho(n)) * K(n, x) * 
-                    // sqrt(1 / rho(m)) * K(m, y);
-                // memo_tilde_K[n][m] += img[x][y] *  K(n, x) * K(m, y);
-                // memo_tilde_K[n][m] += img[x][y] * 
-                //     sqrt(w(x) / rho(n)) * K(n, x) * 
-                //     sqrt(w(y) / rho(m)) * K(m, y);
+                memo_tilde_K[n][m] += img[x][y] * K(n, x) * K(m, y);
             }
         }
     }
     return memo_tilde_K[n][m];
 }
-
 
 
 double c(int n, int i) {
@@ -268,20 +230,6 @@ double ekmi_t(int n, int m) {
                 c(1, 0) * tilde_K(0, 0)
             ) / (c(1, 1) * tilde_K(0, 0));
 
-        // bar_x = 0;
-        // bar_y = 0;
-        // if (img[13][13] == 1) {
-        //     bar_y += 3;
-        // }
-
-        // bar_x = geometric_moment(1, 0) / geometric_moment(0, 0);
-        // bar_y = geometric_moment(0, 1) / geometric_moment(0, 0);
-        // bar_x = 0;
-        // bar_y = 0;
-
-        // printf("%f %f\n", bar_x, bar_y);
-
-
         int i, j, s, t, u, v;
 
         for (i = 0; i < n + 1; i++) {
@@ -305,8 +253,7 @@ double ekmi_t(int n, int m) {
                             for (v = 0; v < t + 1; v++) {
                                 term6 = d(t, v);
                                 acc6 = acc5 * term6;
-                                // memo_ekmi_t[n][m] += acc6 * tilde_K(u, v);
-                                memo_ekmi_t[n][m] += acc6 * tilde_K_t(u, v, bar_x, bar_y);
+                                memo_ekmi_t[n][m] += acc6 * tilde_K(u, v);
                             }
                         }
                     }
@@ -320,16 +267,16 @@ double ekmi_t(int n, int m) {
 
 double ekmi_rst(int n, int m) {
 
-    memo_ekmi_rst[n][m] = ekmi_t(n, m);
+    // memo_ekmi_rst[n][m] = ekmi_t(n, m);
     // memo_ekmi_rst[n][m] = tilde_K(n, m);
-    return memo_ekmi_rst[n][m];
+    // return memo_ekmi_rst[n][m];
 
     double term1, term2, term3, term4, term5, term6, term7, term8, term9, term10;
     double acc1, acc2, acc3, acc4, acc5, acc6;
 
     double lambda, theta;
 
-    lambda = tilde_K(0, 0);
+    lambda = ekmi_t(0, 0);
     double u = 
         2 * c(2, 2) * c(0, 0) / 
         pow(c(1, 1), 2);
@@ -337,14 +284,10 @@ double ekmi_rst(int n, int m) {
         2 * c(2, 2) * pow(c(1, 0), 2) / 
         (c(0, 0) * pow(c(1, 1), 2));
     theta = 0.5 * atan(
-            (u * tilde_K(1, 1) - v * tilde_K(0, 0)) / 
-            (tilde_K(2, 0) - tilde_K(0, 2))
+            (u * ekmi_t(1, 1) - v * ekmi_t(0, 0)) / 
+            (ekmi_t(2, 0) - ekmi_t(0, 2))
         );
     
-    // theta = 0;
-    // // lambda = geometric_moment(0, 0);
-    // lambda = 1;
-
     double cos_theta = cos(theta);
     double sin_theta = sin(theta);
 
@@ -375,8 +318,7 @@ double ekmi_rst(int n, int m) {
                             for (l = 0; l < s + t + 1; l++) {
                                 term7 = d(s + t, l);
                                 acc6 = acc5 * term7;
-                                // memo_ekmi_rst[n][m] += acc6 * ekmi_t(r, l);
-                                memo_ekmi_rst[n][m] += acc6 * tilde_K(r, l);
+                                memo_ekmi_rst[n][m] += acc6 * ekmi_t(r, l);
                             }
                         }
                     }
@@ -424,7 +366,7 @@ void init_glob(int _order, int** _img, int _N, double _p) {
         return;
     }
 }
-    
+
 void free_glob() {
 
     int memo_size = N * 2 + 1;
