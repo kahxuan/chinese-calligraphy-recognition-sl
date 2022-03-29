@@ -11,16 +11,18 @@ def augment_affine(img):
     random.shuffle(stretch_coefs)
 
     src_tri = [
-        [0, 0], 
-        [w, 0], 
-        [0, h]
+        [int((w - 1)//2), 0], 
+        [w - 1, 0], 
+        [0, h - 1]
     ]
-
-    dest_tri = [
-        [0, h*rands[0]], 
-        [w*stretch_coefs[0], h*rands[1]], 
-        [w*rands[2], h*stretch_coefs[1]]
-    ]
+    
+    k_w = w * 0.1
+    k_h = h * 0.1
+    dest_tri = src_tri.copy()
+    dest_tri += np.concatenate([
+        np.random.random((3, 1)) * k_w - k_w / 2,
+        np.random.random((3, 1)) * k_h - k_h / 2
+    ], axis=1)
 
     src_tri = np.array(src_tri).astype(np.float32)
     dest_tri = np.array(dest_tri).astype(np.float32)
@@ -31,8 +33,8 @@ def augment_affine(img):
 
 
 def augment_rotate(img):
-    center = (img.shape[1]//2, img.shape[0]//2)
-    angle = random.random() * 10 - 6
+    center = ((img.shape[1] - 1)//2, (img.shape[0] - 1)//2)
+    angle = random.random() * 10 - 5
     rot_mat = cv2.getRotationMatrix2D(center, angle, 1)
     res = cv2.warpAffine(img, rot_mat, (img.shape[1], img.shape[0]))
     return res
