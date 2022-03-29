@@ -1,6 +1,7 @@
 venv/*
 data/shufadict/*
 data/hanwen360/*
+data/cccr/*
 
 **/__pycache__
 **/.DS_Store
