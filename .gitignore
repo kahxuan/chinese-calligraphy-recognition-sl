@@ -3,6 +3,8 @@ data/shufadict/*
 data/hanwen360/*
 data/cccr/*
 data/cccr_norm/*
+src/krawtchouk/vis_cache/*
+src/kde/pred_cache/*
 
 **/__pycache__
 **/.DS_Store
