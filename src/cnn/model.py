@@ -53,7 +53,7 @@ def load_cr_model(config_path, num_class, weights_path, optimizer=None):
         
     if not optimizer:
         optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
-    model = CRModel(num_class=100)
+    model = CRModel(num_class=100, config_path=config_path)
     model.build(input_shape=tuple([None] + config['model']['image_size'] + [3]))
     model.compile(optimizer=optimizer,
                   loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
